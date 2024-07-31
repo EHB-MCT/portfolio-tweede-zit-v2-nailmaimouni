@@ -1,0 +1,7 @@
+services:
+  web:
+    build: ./images/api
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./images/api/src:/app/src
