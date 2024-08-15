@@ -1,3 +1,7 @@
+const {
+    checkCoursesName
+} = require("./../helpers/endpointHelpers.js")
+
 const express = require('express');
 const {
     Pool
@@ -56,19 +60,27 @@ router.post('/api/v1/courses', async (req, res) => {
         instructor,
         credits
     } = req.body;
-    try {
-        const result = await pool.query(
-            'INSERT INTO courses (course_name, description, instructor, credits) VALUES ($1, $2, $3, $4) RETURNING *',
-            [course_name, description, instructor, credits]
-        );
-        res.status(201).json({
-            message: 'Course created',
-            data: result.rows[0]
-        });
-    } catch (err) {
-        res.status(500).json({
-            error: err.message
-        });
+    if (checkCoursesName(student.name)) {
+
+
+        try {
+            const result = await pool.query(
+                'INSERT INTO courses (course_name, description, instructor, credits) VALUES ($1, $2, $3, $4) RETURNING *',
+                [course_name, description, instructor, credits]
+            );
+            res.status(201).json({
+                message: 'Course created',
+                data: result.rows[0]
+            });
+        } catch (err) {
+            res.status(500).json({
+                error: err.message
+            });
+        }
+    } else {
+        res.status(401).send({
+            message: "name not formatted correctly"
+        })
     }
 });
 

@@ -1,15 +1,19 @@
 /**
-table.increments('id').primary();
-table.string('course_name').notNullable();
-table.text('description');
-table.string('instructor');
-table.integer('credits');
+ * Check name of courses on post
+ * @params: course name
+ * @returns: false if no match, true if right type
+ * 
  */
 
-function checkCoursesName(params) {
-
-
-
+function checkCoursesName(name) {
+    if (
+        name == null ||
+        name.length <= 1 ||
+        typeof (name) != "string"
+    ) {
+        return false
+    }
+    return true
 }
 
 module.exports = {

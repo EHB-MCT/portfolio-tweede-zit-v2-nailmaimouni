@@ -7,7 +7,7 @@
     "start": "nodemon src/index.js",
     "migrate": "knex migrate:latest --knexfile src/db/knexfile.js",
     "seed": "knex seed:run --knexfile src/db/knexfile.js",
-    "test": "jest"
+    "test": "jest --watchAll"
   },
   "author": "",
   "license": "ISC",
