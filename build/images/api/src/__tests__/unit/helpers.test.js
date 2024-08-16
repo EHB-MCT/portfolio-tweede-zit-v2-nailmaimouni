@@ -1,6 +1,6 @@
 const {
     checkCoursesName
-} = require("./../helpers/endpointHelpers.js");
+} = require("../../helpers/endpointHelpers.js");
 
 /**
 table.increments('id').primary();

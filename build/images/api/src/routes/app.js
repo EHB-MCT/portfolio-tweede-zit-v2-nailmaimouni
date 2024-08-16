@@ -21,7 +21,7 @@ router.get('/', (req, res) => {
 });
 
 // Get all courses
-router.get('/api/v1/courses', async (req, res) => {
+router.get('/courses', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM courses');
         res.json(result.rows);
@@ -33,7 +33,7 @@ router.get('/api/v1/courses', async (req, res) => {
 });
 
 // Get a single course by ID
-router.get('/api/v1/courses/:id', async (req, res) => {
+router.get('/courses/:id', async (req, res) => {
     const {
         id
     } = req.params;
@@ -53,7 +53,7 @@ router.get('/api/v1/courses/:id', async (req, res) => {
 });
 
 // Create a new course
-router.post('/api/v1/courses', async (req, res) => {
+router.post('/courses', async (req, res) => {
     const {
         course_name,
         description,
@@ -85,7 +85,7 @@ router.post('/api/v1/courses', async (req, res) => {
 });
 
 // Update an existing course
-router.put('/api/v1/courses/:id', async (req, res) => {
+router.put('/courses/:id', async (req, res) => {
     const {
         id
     } = req.params;
@@ -117,7 +117,7 @@ router.put('/api/v1/courses/:id', async (req, res) => {
 });
 
 // Delete a course
-router.delete('/api/v1/courses/:id', async (req, res) => {
+router.delete('/courses/:id', async (req, res) => {
     const {
         id
     } = req.params;
