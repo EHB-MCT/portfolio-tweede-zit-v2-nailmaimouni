@@ -1,21 +1,35 @@
+version: "3.2"
+
 services:
   web:
     build: ./images/api
     ports:
-      - "3000:3000"
+      - 80:3000
     volumes:
       - ./images/api/src:/app/src
+    environment:
+      NODE_ENV: development
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: "db"
+      POSTGRES_PORT: 5432
+    depends_on:
+      - "db"
       
   
 
-  store:
+  db:
     image: postgres:latest
+    restart: always
     ports:
     - 5432:5432
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_HOST_AUTH_METHOD: ${POSTGRES_HOST_AUTH_METHOD}
+      POSTGRES_DB: "db"
+      POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
     - ./_backup:/var/lib/postgresql/data
+    env_file:
+    - ./.env
