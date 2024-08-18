@@ -1,21 +1,21 @@
 require('dotenv').config();
-const path = require('path');
+
 
 module.exports = {
   development: {
     client: 'pg',
     connection: {
-      host: "localhost",
-      user: "example",
-      password: "example",
-      database: "test",
+      host: process.env.POSTGRES_HOST || '127.0.0.1',
+      user: process.env.POSTGRES_USER || 'postgres',
+      password: process.env.POSTGRES_PASSWORD || 'example',
+      database: process.env.POSTGRES_DB || 'postgres',
       port: process.env.POSTGRES_PORT || 5432
     },
     migrations: {
-      directory: "./migrations"
+      directory: "./src/db/migrations"
     },
     seeds: {
-      directory: "./seeds"
+      directory: "./src/db/seeds"
     }
   }
 };

@@ -33,24 +33,35 @@ router.get('/courses', async (req, res) => {
 });
 
 // Get a single course by ID
-router.get('/courses/:id', async (req, res) => {
-    const {
-        id
-    } = req.params;
-    try {
-        const result = await pool.query('SELECT * FROM courses WHERE id = $1', [id]);
-        if (result.rows.length === 0) {
-            return res.status(404).json({
-                message: 'Course not found'
+module.exports = (app, db) => {
+    app.get('/courses/:id', async (req, res) => {
+        const id = parseInt(req.params.id, 10); // Extract and convert the id to a number
+
+        if (isNaN(id) || id >= 0) { // Check if the id is not a number or negative
+            return res.status(401).json({
+                error: 'negative id provided'
             });
         }
-        res.json(result.rows[0]);
-    } catch (err) {
-        res.status(500).json({
-            error: err.message
-        });
-    }
-});
+
+        try {
+            const course = await db('courses').where({
+                id
+            }).first(); // Fetch the course by id
+            if (course) {
+                res.json(course);
+            } else {
+                res.status(404).json({
+                    error: 'Course not found'
+                });
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({
+                error: 'error has occurred fetching the courses.'
+            });
+        }
+    });
+};
 
 // Create a new course
 router.post('/courses', async (req, res) => {
