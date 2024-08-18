@@ -108,92 +108,43 @@ function courseAddRoute(app, db) {
 
 
 
-// router.post('/courses', async (req, res) => {
-//     const {
-//         course_name,
-//         description,
-//         instructor,
-//         credits
-//     } = req.body;
-//     if (checkCoursesName(course_name)) {
-//         try {
-//             const result = await pool.query(
-//                 'INSERT INTO courses (course_name, description, instructor, credits) VALUES ($1, $2, $3, $4) RETURNING *',
-//                 [course_name, description, instructor, credits]
-//             );
-//             res.status(201).json({
-//                 message: 'Course created',
-//                 data: result.rows[0]
-//             });
-//         } catch (err) {
-//             res.status(500).json({
-//                 error: err.message
-//             });
-//         }
-//     } else {
-//         res.status(401).send({
-//             message: "name not formatted correctly"
-//         })
-//     }
-// });
-
-// Update an existing course
-router.put('/courses/:id', async (req, res) => {
-    const {
-        id
-    } = req.params;
-    const {
-        course_name,
-        description,
-        instructor,
-        credits
-    } = req.body;
-    try {
-        const result = await pool.query(
-            'UPDATE courses SET course_name = $1, description = $2, instructor = $3, credits = $4 WHERE id = $5 RETURNING *',
-            [course_name, description, instructor, credits, id]
-        );
-        if (result.rows.length === 0) {
-            return res.status(404).json({
-                message: 'Course not found'
-            });
-        }
-        res.json({
-            message: 'Course updated',
-            data: result.rows[0]
-        });
-    } catch (err) {
-        res.status(500).json({
-            error: err.message
-        });
-    }
-});
-
 // Delete a course
-router.delete('/courses/:id', async (req, res) => {
-    const {
-        id
-    } = req.params;
-    try {
-        const result = await pool.query('DELETE FROM courses WHERE id = $1 RETURNING *', [id]);
-        if (result.rows.length === 0) {
-            return res.status(404).json({
-                message: 'Course not found'
+function courseDeleteRoute(app, db) {
+    app.delete('/courses/:id', async (req, res) => {
+        const {
+            id
+        } = req.params;
+
+        try {
+            const result = await db('courses')
+                .where({
+                    id
+                })
+                .del()
+                .returning("*");
+
+            if (result.length === 0) {
+                return res.status(404).json({
+                    message: 'Course not found'
+                });
+            }
+
+            res.json({
+                message: 'Course deleted',
+                data: result[0]
+            });
+        } catch (err) {
+            console.error('Error during course deletion:', err);
+            res.status(500).json({
+                error: err.message
             });
         }
-        res.json({
-            message: 'Course deleted',
-            data: result.rows[0]
-        });
-    } catch (err) {
-        res.status(500).json({
-            error: err.message
-        });
-    }
-});
+    });
+}
 
 module.exports = (app, db) => {
     courseByIdRoute(app, db);
-    courseAddRoute(app, db); // Ensure this function is being called
+    courseAddRoute(app, db);
+    courseDeleteRoute(app, db);
     app.use('/', router);
 };

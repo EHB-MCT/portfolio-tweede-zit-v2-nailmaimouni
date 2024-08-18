@@ -1,15 +1,12 @@
 const request = require('supertest');
 const app = require('./../../app.js')
-const {
-    v4: uuid
-} = require("uuid")
+
 
 const knexfile = require('../../db/knexfile.js');
 const db = require("knex")(knexfile.development);
 
 
 const exampleCourse = {
-    UUID: uuid(),
     course_name: 'test',
     description: 'hallo',
     instructor: 'john doe',
@@ -20,6 +17,7 @@ const exampleCourse = {
 describe('POST /courses', () => {
 
     beforeAll(async () => {
+        await db('courses').truncate();
         await db.migrate.latest();
         await db.seed.run();
     });
@@ -37,5 +35,22 @@ describe('POST /courses', () => {
 
 
     });
+
+    // test('should return 401, wrong course record', async () => {
+    //     const response = await request(app)
+    //         .post(`/courses`)
+    //         .send({
+    //             ...exampleCourse,
+    //             name: null
+    //         });
+
+    //     expect(response.status).toBe(401);
+
+
+    //     const dbRecord = await db('courses').select("*").where("name", null);
+    //     expect(dbRecord.length).toBe(0)
+
+
+    // });
 
 });

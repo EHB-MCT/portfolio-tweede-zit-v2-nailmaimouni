@@ -9,7 +9,7 @@ module.exports = {
       user: process.env.POSTGRES_USER || 'postgres',
       password: process.env.POSTGRES_PASSWORD || 'example',
       database: process.env.POSTGRES_DB || 'postgres',
-      port: process.env.POSTGRES_PORT || 5432
+      port: process.env.POSTGRES_PORT || 5432 
     },
     migrations: {
       directory: "./src/db/migrations"
