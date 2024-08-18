@@ -6,6 +6,7 @@ const express = require('express');
 const {
     Pool
 } = require('pg');
+const app = require("../app.js");
 require('dotenv').config();
 
 const router = express.Router();
@@ -33,13 +34,19 @@ router.get('/courses', async (req, res) => {
 });
 
 // Get a single course by ID
-module.exports = (app, db) => {
+function courseByIdRoute(app, db) {
     app.get('/courses/:id', async (req, res) => {
         const id = parseInt(req.params.id, 10); // Extract and convert the id to a number
 
-        if (isNaN(id) || id >= 0) { // Check if the id is not a number or negative
+        if (isNaN(id) || id < 0) { // Check if the id is not a number or negative
             return res.status(401).json({
                 error: 'negative id provided'
+            });
+        }
+
+        if (id > 9999) { // Check if the id is too large
+            return res.status(401).json({
+                error: 'id too large'
             });
         }
 
@@ -61,39 +68,74 @@ module.exports = (app, db) => {
             });
         }
     });
-};
+}
+
 
 // Create a new course
-router.post('/courses', async (req, res) => {
-    const {
-        course_name,
-        description,
-        instructor,
-        credits
-    } = req.body;
-    if (checkCoursesName(student.name)) {
+function courseAddRoute(app, db) {
+    app.post("/courses", async (req, res) => {
+        const course = req.body;
 
+        // Validate the course name
+        if (checkCoursesName(course.course_name)) {
+            try {
+                const result = await db('courses')
+                    .insert({
+                        course_name: course.course_name,
+                        description: course.description,
+                        instructor: course.instructor,
+                        credits: course.credits
+                    })
+                    .returning("*");
 
-        try {
-            const result = await pool.query(
-                'INSERT INTO courses (course_name, description, instructor, credits) VALUES ($1, $2, $3, $4) RETURNING *',
-                [course_name, description, instructor, credits]
-            );
-            res.status(201).json({
-                message: 'Course created',
-                data: result.rows[0]
-            });
-        } catch (err) {
-            res.status(500).json({
-                error: err.message
+                res.status(201).json({
+                    message: 'Course created',
+                    data: result[0]
+                });
+            } catch (err) {
+                console.error('Error during course creation:', err);
+                res.status(500).json({
+                    error: err.message
+                });
+            }
+        } else {
+            res.status(401).send({
+                message: "Course name not formatted correctly"
             });
         }
-    } else {
-        res.status(401).send({
-            message: "name not formatted correctly"
-        })
-    }
-});
+    });
+}
+
+
+
+// router.post('/courses', async (req, res) => {
+//     const {
+//         course_name,
+//         description,
+//         instructor,
+//         credits
+//     } = req.body;
+//     if (checkCoursesName(course_name)) {
+//         try {
+//             const result = await pool.query(
+//                 'INSERT INTO courses (course_name, description, instructor, credits) VALUES ($1, $2, $3, $4) RETURNING *',
+//                 [course_name, description, instructor, credits]
+//             );
+//             res.status(201).json({
+//                 message: 'Course created',
+//                 data: result.rows[0]
+//             });
+//         } catch (err) {
+//             res.status(500).json({
+//                 error: err.message
+//             });
+//         }
+//     } else {
+//         res.status(401).send({
+//             message: "name not formatted correctly"
+//         })
+//     }
+// });
 
 // Update an existing course
 router.put('/courses/:id', async (req, res) => {
@@ -150,4 +192,8 @@ router.delete('/courses/:id', async (req, res) => {
     }
 });
 
-module.exports = router;
+module.exports = (app, db) => {
+    courseByIdRoute(app, db);
+    courseAddRoute(app, db); // Ensure this function is being called
+    app.use('/', router);
+};
