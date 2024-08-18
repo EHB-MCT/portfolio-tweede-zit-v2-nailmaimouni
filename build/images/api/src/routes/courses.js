@@ -36,15 +36,15 @@ router.get('/courses', async (req, res) => {
 // Get a single course by ID
 function courseByIdRoute(app, db) {
     app.get('/courses/:id', async (req, res) => {
-        const id = parseInt(req.params.id, 10); // Extract and convert the id to a number
+        const id = parseInt(req.params.id, 10); 
 
-        if (isNaN(id) || id < 0) { // Check if the id is not a number or negative
+        if (isNaN(id) || id < 0) { 
             return res.status(401).json({
                 error: 'negative id provided'
             });
         }
 
-        if (id > 9999) { // Check if the id is too large
+        if (id > 9999) {
             return res.status(401).json({
                 error: 'id too large'
             });
@@ -53,7 +53,7 @@ function courseByIdRoute(app, db) {
         try {
             const course = await db('courses').where({
                 id
-            }).first(); // Fetch the course by id
+            }).first(); 
             if (course) {
                 res.json(course);
             } else {
@@ -76,7 +76,7 @@ function courseAddRoute(app, db) {
     app.post("/courses", async (req, res) => {
         const course = req.body;
 
-        // Validate the course name
+        
         if (checkCoursesName(course.course_name)) {
             try {
                 const result = await db('courses')

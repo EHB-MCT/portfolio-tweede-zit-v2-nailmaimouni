@@ -35,22 +35,4 @@ describe('POST /courses', () => {
 
 
     });
-
-    // test('should return 401, wrong course record', async () => {
-    //     const response = await request(app)
-    //         .post(`/courses`)
-    //         .send({
-    //             ...exampleCourse,
-    //             name: null
-    //         });
-
-    //     expect(response.status).toBe(401);
-
-
-    //     const dbRecord = await db('courses').select("*").where("name", null);
-    //     expect(dbRecord.length).toBe(0)
-
-
-    // });
-
 });
